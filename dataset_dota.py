@@ -87,30 +87,23 @@ class Dataset(Dataset):
         """
         return int(feat_path.split('/')[-1].split('.mat')[0].split('_')[-1])
 
-    def get_toa_all(self, annofile):
+    def get_toa_all(self, video_name):
 
-        """ Taken from baseline - https://github.com/Cogito2012/UString/blob/master/src/DataLoader.py
-        Function to TOA (time-to-accident) for the videos given the annotation file
-        Input:
-        annofile: Path to the annotation file provided by the dataset
-
-        Returns:
-        toa_dict: Dictionary containing the TOA for every video
-
+        """ 
+        get toa from toas directory
         """
 
-        toa_dict = {}
-        annoData = self.read_anno_file(annofile)
-        for anno in annoData:
-            labels = np.array(anno['label'], dtype=np.int8)
-            toa = np.where(labels == 1)[0][0]
-            toa = min(max(1, toa), self.n_frames - 1)
-            toa_dict[anno['vid']] = toa
-        return toa_dict
+        toa_dir = self.frame_stats_path[:-12] + 'toas'
+        toa_file = os.path.join(toa_dir, video_name+'.txt')
+
+        with open(toa_file) as f:
+            return int(f.read())
+        
 
     def __getitem__(self, index):
 
         feature_path = self.feature_paths[index % (len(self))]
+        video_name = feature_path.split('/')[-1][:-4]
 
         # Load the data.npy (for features) and det.npy (for bounding boxes) files
         all_data = np.load(f"{feature_path}")
@@ -120,7 +113,7 @@ class Dataset(Dataset):
 
         curr_vid_label = int(all_data['labels'][1])
         if curr_vid_label > 0:
-            curr_toa = 40
+            curr_toa = self.get_toa_all(video_name)
         else:
             curr_toa = self.n_frames + 1
 
@@ -247,7 +240,7 @@ class Dataset(Dataset):
 
     def __len__(self):
         return len(self.feature_paths)
-
+    
 class FeaturesDataset(Dataset):
     def __init__(self, dataset_path, img_dataset_path, split_path, ref_interval, objmap_file, training):
 
@@ -318,30 +311,23 @@ class FeaturesDataset(Dataset):
         """
         return int(feat_path.split('/')[-1].split('.mat')[0].split('_')[-1])
 
-    def get_toa_all(self, annofile):
+    def get_toa_all(self, video_name):
 
-        """ Taken from baseline - https://github.com/Cogito2012/UString/blob/master/src/DataLoader.py
-        Function to TOA (time-to-accident) for the videos given the annotation file
-        Input:
-        annofile: Path to the annotation file provided by the dataset
-
-        Returns:
-        toa_dict: Dictionary containing the TOA for every video
-
+        """ 
+        get toa from toas directory
         """
 
-        toa_dict = {}
-        annoData = self.read_anno_file(annofile)
-        for anno in annoData:
-            labels = np.array(anno['label'], dtype=np.int8)
-            toa = np.where(labels == 1)[0][0]
-            toa = min(max(1, toa), self.n_frames - 1)
-            toa_dict[anno['vid']] = toa
-        return toa_dict
+        toa_dir = self.frame_stats_path[:-12] + 'toas'
+        toa_file = os.path.join(toa_dir, video_name+'.txt')
+
+        with open(toa_file) as f:
+            return int(f.read())
+        
 
     def __getitem__(self, index):
 
         feature_path = self.feature_paths[index % (len(self))]
+        video_name = feature_path.split('/')[-1][:-4]
 
         # Load the data.npy (for features) and det.npy (for bounding boxes) files
         all_data = np.load(f"{feature_path}")
@@ -351,7 +337,7 @@ class FeaturesDataset(Dataset):
 
         curr_vid_label = int(all_data['labels'][1])
         if curr_vid_label > 0:
-            curr_toa = 40
+            curr_toa = self.get_toa_all(video_name)
         else:
             curr_toa = self.n_frames + 1
 

@@ -12,15 +12,19 @@ pip install -r requirements.txt
 
 ## Dataset 
 For DAD and CCD:<br>
-Download the data from [link](https://drive.google.com/drive/folders/1BE_H_BXlOdSflsPxll8dftdB9CuqKRwg?usp=sharing) and place it in `data` folder. There are 3 folders for each dataset: 
+Download the data from [link](https://drive.google.com/drive/folders/1BE_H_BXlOdSflsPxll8dftdB9CuqKRwg?usp=sharing) and place it in `data` folder. There are 3 folders and 1 file for each dataset: 
 - `obj_feat`: The object data for both datasets is downloaded from [1].
 - `i3d_feat`: We extracted I3D features for all the frames using the code and pretrained model available at [2].
 - `frames_stat`: This contains the resolution for every frame of a video.  
 - `obj_idx_to_labels.json`: This contains classnames for object detections done in the feature extraction process.
 
 For DoTA: <br>
-You can use the scripts in `data/scripts/dota` to generate dataset for the algorithm. (Here, vgg16 features are used instead of i3d features).<br>
-Structure of the dataset is same as DAD and CCD.
+You can use the scripts in `data/scripts/dota` to generate dataset for the algorithm. (Here, vgg16 features are used instead of i3d features).There must be folowing 4 folders and 1 file for the dataset: 
+- `obj_feat`: The object data for both datasets is downloaded from [1].
+- `i3d_feat`: We extracted I3D features for all the frames using the code and pretrained model available at [2].
+- `frames_stat`: This contains the resolution for every frame of a video.  
+- `toas`: frame where accidents happen for all positive videos in text files
+- `obj_idx_to_labels.json`: This contains classnames for object detections done in the feature extraction process.
 
 ## Training
 To train use the following commands: 
