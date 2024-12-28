@@ -71,6 +71,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # Classification criterion
 cls_criterion = nn.CrossEntropyLoss().to(device)
 
+acc_best_avg_precision = 0
 best_ap = -1
 n_frames = 50
 
@@ -260,6 +261,11 @@ def train(model, train_dataloader, test_dataloader, fold):
         # Testing the model
         test_model(epoch, model, test_dataloader, fold)
 
+        global best_ap
+        global acc_best_avg_precision
+
+        acc_best_avg_precision += best_ap
+
         scheduler.step()
 
 
@@ -296,3 +302,6 @@ if __name__ == "__main__":
         test_dataloader = DataLoader(test_dataset, batch_size=opt.test_video_batch_size, shuffle=False, num_workers=8)
 
         train(model, train_dataloader, test_dataloader, fold)
+
+    print('average of all best average precision: ', acc_best_avg_precision/5)
+
