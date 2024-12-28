@@ -19,3 +19,4 @@ torchsampler==0.1.2
 torchsummary==1.5.1
 torchvision==0.15.1
 tqdm==4.65.0
+ultralytics==8.3.53
