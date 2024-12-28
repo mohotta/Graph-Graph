@@ -147,9 +147,6 @@ def test_model(epoch, model, test_dataloader, fold):
     class_recall = cf.diagonal() / cf.sum(axis=1)
     print(np.round(class_recall, 3))
 
-    if bool(opt.test_only):
-        exit(0)
-
     # Saving checkpoint
     if avg_prec > best_ap:
         best_ap = avg_prec
