@@ -79,7 +79,7 @@ def evaluation(all_pred, all_labels, time_of_accidents, fps=20.0):
     new_Time[-1] = Time[rep_index[-1]]
     new_Precision[-1] = Precision[rep_index[-1]]
     new_Recall = Recall[rep_index]
-    breakpoint()
+    # breakpoint()
     # compute AP (area under P-R curve)
     AP = 0.0
     if new_Recall[0] != 0:
