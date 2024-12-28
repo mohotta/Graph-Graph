@@ -96,16 +96,16 @@ if __name__ == "__main__":
                     if length == 50:
                         toa = accident_frame
                         start_frame = 0
-                    elif accident_frame < 40:
+                    elif accident_frame < 30:
                         toa = accident_frame
                         start_frame = 0
                     else:
-                        if (accident_frame - 40 + 50) < length:
-                            start_frame = accident_frame - 40
-                            toa = 40
+                        if (accident_frame - 30 + 50) < length:
+                            start_frame = accident_frame - 30
+                            toa = 30
                         else:
                             start_frame = (length - 50 - 1)
-                            toa = accident_frame + start_frame + 1
+                            toa = accident_frame - start_frame
 
                     print("start:", start_frame)
 
@@ -150,8 +150,8 @@ if __name__ == "__main__":
                             video.release()
 
                     cap.release()
-                    cv2.destroyAllWindows()
-    with open("data/dota/meta.txt", "w") as f:
+                    #cv2.destroyAllWindows()
+    with open("meta.txt", "w") as f:
         f.write("\n".join([f"positive: {positive_count}", f"negative: {negative_count}"]))
     print("positive:", positive_count, "|", "negative:", negative_count)
     print("done!")
