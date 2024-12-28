@@ -47,11 +47,11 @@ from eval_utils import evaluation
 torch.manual_seed(0)  # 3407
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--dataset_path", type=str, default="data/dota_ego/obj_feat", help="Path to extracted objects data")
-parser.add_argument("--img_dataset_path", type=str, default="data/dota_ego/i3d_feat", help="Path to I3D feature data")
-parser.add_argument("--obj_mapping_file", type=str, default="data/dota_ego/obj_idx_to_labels.json",
+parser.add_argument("--dataset_path", type=str, default="data/dota/obj_feat", help="Path to extracted objects data")
+parser.add_argument("--img_dataset_path", type=str, default="data/dota/i3d_feat", help="Path to I3D feature data")
+parser.add_argument("--obj_mapping_file", type=str, default="data/dota/obj_idx_to_labels.json",
                     help="path to object label mapping file")
-parser.add_argument("--split_path", type=str, default="splits_dota_ego/", help="Path to train/test split")
+parser.add_argument("--split_path", type=str, default="splits_dota/", help="Path to train/test split")
 parser.add_argument("--num_epochs", type=int, default=50, help="Number of training epochs")
 parser.add_argument("--batch_size", type=int, default=1, help="Size of each training batch for frames")
 parser.add_argument("--video_batch_size", type=int, default=1, help="Size of each training batch for video")
