@@ -267,13 +267,8 @@ def train(train_dataloader, test_dataloader, fold):
         # Testing the model
         test_model(epoch, model, test_dataloader, fold)
 
-        global best_ap
-        global acc_best_avg_precision
-
-        acc_best_avg_precision += best_ap
 
         scheduler.step()
-
 
 if __name__ == "__main__":
     
@@ -303,6 +298,9 @@ if __name__ == "__main__":
         test_dataloader = DataLoader(test_dataset, batch_size=opt.test_video_batch_size, shuffle=False, num_workers=8)
 
         train(train_dataloader, test_dataloader, fold)
+
+        acc_best_avg_precision += best_ap
+        best_ap = -1
 
     print('average of all best average precision: ', acc_best_avg_precision/5)
 
