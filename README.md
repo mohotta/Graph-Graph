@@ -65,6 +65,12 @@ CCD dataset-
 python train_ccd.py --test_only 1 --checkpoint_model "model_checkpoints/ccd_model.pth"
 ```
 
+## Cross Validation
+You can perform cross validation on DoTA Dataset-
+```python
+python cross_validate_dota.py --n_folds 5
+```
+
 ## References
 1. [https://github.com/Cogito2012/UString](https://github.com/Cogito2012/UString)
 2. [https://github.com/piergiaj/pytorch-i3d](https://github.com/piergiaj/pytorch-i3d)
