@@ -54,6 +54,7 @@ parser.add_argument("--obj_mapping_file", type=str, default="data/dota/obj_idx_t
                     help="path to object label mapping file")
 parser.add_argument("--split_path", type=str, default="splits_dota/", help="Path to train/test split")
 parser.add_argument("--num_epochs", type=int, default=20, help="Number of training epochs")
+parser.add_argument("--n_folds", type=int, default=5, help="Number of training epochs")
 parser.add_argument("--batch_size", type=int, default=1, help="Size of each training batch for frames")
 parser.add_argument("--video_batch_size", type=int, default=1, help="Size of each training batch for video")
 parser.add_argument("--test_video_batch_size", type=int, default=1, help="Size of each test batch for video")
@@ -288,7 +289,7 @@ if __name__ == "__main__":
         training=True,
     )
 
-    folds = 5
+    folds = opt.n_folds
     kf = KFold(n_splits=folds, shuffle=True, random_state=42)
 
     for fold, (train_idx, test_idx) in enumerate(kf.split(dataset)):
