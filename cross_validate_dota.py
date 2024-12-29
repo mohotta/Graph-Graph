@@ -53,7 +53,7 @@ parser.add_argument("--img_dataset_path", type=str, default="data/dota/i3d_feat"
 parser.add_argument("--obj_mapping_file", type=str, default="data/dota/obj_idx_to_labels.json",
                     help="path to object label mapping file")
 parser.add_argument("--split_path", type=str, default="splits_dota/", help="Path to train/test split")
-parser.add_argument("--num_epochs", type=int, default=50, help="Number of training epochs")
+parser.add_argument("--num_epochs", type=int, default=20 help="Number of training epochs")
 parser.add_argument("--batch_size", type=int, default=1, help="Size of each training batch for frames")
 parser.add_argument("--video_batch_size", type=int, default=1, help="Size of each training batch for video")
 parser.add_argument("--test_video_batch_size", type=int, default=1, help="Size of each test batch for video")
@@ -160,7 +160,12 @@ def test_model(epoch, model, test_dataloader, fold):
     print("")
 
 
-def train(model, train_dataloader, test_dataloader, fold):
+def train(train_dataloader, test_dataloader, fold):
+
+    # Define network
+    model = SpaceTempGoG_detr_dota(input_dim=opt.input_dim, embedding_dim=opt.embedding_dim,
+                                  img_feat_dim=opt.img_feat_dim, num_classes=opt.num_classes).to(device)
+    print(model)
 
     model.train()
 
@@ -283,11 +288,6 @@ if __name__ == "__main__":
         training=True,
     )
 
-    # Define network
-    model = SpaceTempGoG_detr_dota(input_dim=opt.input_dim, embedding_dim=opt.embedding_dim,
-                                  img_feat_dim=opt.img_feat_dim, num_classes=opt.num_classes).to(device)
-    print(model)
-
     folds = 5
     kf = KFold(n_splits=folds, shuffle=True, random_state=42)
 
@@ -301,7 +301,7 @@ if __name__ == "__main__":
         train_dataloader = DataLoader(train_dataset, batch_size=opt.video_batch_size, shuffle=True, num_workers=8)
         test_dataloader = DataLoader(test_dataset, batch_size=opt.test_video_batch_size, shuffle=False, num_workers=8)
 
-        train(model, train_dataloader, test_dataloader, fold)
+        train(train_dataloader, test_dataloader, fold)
 
     print('average of all best average precision: ', acc_best_avg_precision/5)
 
