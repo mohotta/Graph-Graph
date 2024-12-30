@@ -141,25 +141,9 @@ for root, _, files in os.walk(video_dir):
 
 CLASSES = ('__background__', 'Car', 'Pedestrian', 'Cyclist')
 
-def parse_args():
-    """
-    Parse input arguments
-    """
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--dota_dir', dest='dota_dir', help='The directory to the Dashcam Accident Dataset', default="data/dota")
-    parser.add_argument('--out_dir', dest='out_dir', help='The directory to the output files.', default="data/dota_ego/obj_feat")
-    parser.add_argument('--n_frames', dest='n_frames', help='The number of frames sampled from each video', default=50)
-    parser.add_argument('--n_boxes', dest='n_boxes', help='The number of bounding boxes for each frame', default=19)
-    parser.add_argument('--dim_feat', dest='dim_feat', help='The dimension of extracted ResNet101 features',
-                        default=4096)
-    #
-    # if len(sys.argv) == 1:
-    #     parser.print_help()
-    #     sys.exit(1)
-
-    args = parser.parse_args()
-    return args
-
+n_frames=50
+n_boxes=19
+dim_feat=4096
 
 def get_video_frames(video_file, n_frames=50):
     # get the video data
@@ -209,15 +193,15 @@ def extract_features(detections_path, video_path, dest_path, phase):
 
     for root, _, files in os.walk(video_path):
         for file in files:
-            video_file = osp.join(root, file)
+            video_file = os.path.join(root, file)
             print("processing:", video_file)
-            video_frames = get_video_frames(video_file, n_frames=args.n_frames)
-            detections_file = osp.join(detections_path, file[:-4] + ".npy")
+            video_frames = get_video_frames(video_file, n_frames=n_frames)
+            detections_file = os.path.join(detections_path, file[:-4] + ".npy")
             detections = np.load(detections_file)
             label = np.array([0,1]) if root.split("/")[-1] == "positive" else np.array([1,0])
-            feat_file = osp.join(dest_path, file[:-4] + ".npz")
+            feat_file = os.path.join(dest_path, file[:-4] + ".npz")
 
-            features_vgg16 = np.zeros((args.n_frames, args.n_boxes + 1, args.dim_feat), dtype=np.float32)
+            features_vgg16 = np.zeros((n_frames, n_boxes + 1, dim_feat), dtype=np.float32)
 
 
             for i, frame in tqdm(enumerate(video_frames), total=len(video_frames)):
