@@ -242,7 +242,7 @@ class Dataset(Dataset):
         return len(self.feature_paths)
     
 class CrossValDataset(Dataset):
-    def __init__(self, dataset_path, img_dataset_path, split_path, ref_interval, objmap_file, training):
+    def __init__(self, dataset_path, img_dataset_path, toas_files_path, split_path, ref_interval, objmap_file, training):
 
         """
         Input:
@@ -264,6 +264,7 @@ class CrossValDataset(Dataset):
         self.ref_interval = ref_interval
         self.temporal_ref = 1
         self.dilation_factor = 1
+        self.toas_files_path = toas_files_path
         self.topk = 10
         self.frame_stats_path = dataset_path[:-8] + 'frames_stats'  # (height, width)
         self.n_frames = 100
@@ -314,7 +315,7 @@ class CrossValDataset(Dataset):
         get toa from toas directory
         """
 
-        toa_dir = self.frame_stats_path[:-12] + 'toas'
+        toa_dir = self.toas_files_path
         toa_file = os.path.join(toa_dir, video_name+'.txt')
 
         with open(toa_file) as f:

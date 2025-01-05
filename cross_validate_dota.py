@@ -50,6 +50,7 @@ torch.manual_seed(0)  # 3407
 parser = argparse.ArgumentParser()
 parser.add_argument("--dataset_path", type=str, default="data/dota/obj_feat", help="Path to extracted objects data")
 parser.add_argument("--img_dataset_path", type=str, default="data/dota/i3d_feat", help="Path to I3D feature data")
+parser.add_argument("--toas_files_path", type=str, default="data/dota/toas", help="Path to frame of accidents feature data")
 parser.add_argument("--obj_mapping_file", type=str, default="data/dota/obj_idx_to_labels.json",
                     help="path to object label mapping file")
 parser.add_argument("--split_path", type=str, default="splits_dota/", help="Path to train/test split")
@@ -153,8 +154,8 @@ def test_model(epoch, model, test_dataloader, fold):
     if avg_prec > best_ap:
         best_ap = avg_prec
         os.makedirs("model_checkpoints/dota", exist_ok=True)
-        torch.save(model.state_dict(), f"model_checkpoints/dota/{model.__class__.__name__}_{fold}_{epoch}.pth")
-        print(f"Saved the model checkpoint - model_checkpoints/dota/{model.__class__.__name__}_{fold}_{epoch}.pth")
+        torch.save(model.state_dict(), f"model_checkpoints/dota/{model.__class__.__name__}_{fold+1}_{epoch+1}.pth")
+        print(f"Saved the model checkpoint - model_checkpoints/dota/{model.__class__.__name__}_{fold+1}_{epoch+1}.pth")
     print("Best Frame avg precision: %.2f%%" % (best_ap))
 
     model.train()
@@ -184,7 +185,7 @@ def train(train_dataloader, test_dataloader, fold):
         start = time.time()
         epoch_metrics = {"c1_loss": []}
 
-        print(f"--- Epoch {epoch} ---")
+        print(f"--- Epoch {epoch+1} ---")
 
         loss, all_toa = 0, []
 
@@ -244,8 +245,8 @@ def train(train_dataloader, test_dataloader, fold):
             if batch_i % 100 == 0:
                 print("[Fold %d/5] [Epoch %d/%d] [Batch %d/%d] [CE Loss: %f (%f)] [LR : %.6f]"
                       % (
-                          fold,
-                          epoch,
+                          fold+1,
+                          epoch+1,
                           opt.num_epochs,
                           batch_i,
                           len(train_dataloader),
@@ -277,6 +278,7 @@ if __name__ == "__main__":
     dataset = CrossValDataset(
         img_dataset_path=opt.img_dataset_path,
         dataset_path=opt.dataset_path,
+        toas_files_path=opt.toas_files_path,
         split_path=opt.split_path,
         #		frame_batch_size=opt.batch_size,
         ref_interval=opt.ref_interval,
