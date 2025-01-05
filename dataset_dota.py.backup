@@ -136,8 +136,8 @@ class Dataset(Dataset):
         frame_stats = torch.from_numpy(np.load(frame_stats_file)).float()
 
         # Calculating the bbox centers
-        cx_1, cy_1, cx_2, cy_2 = all_bbox[:, :, 0], all_bbox[:, :, 1], all_bbox[:, :, 2], all_bbox[:, :, 3]
-        all_obj_centers = torch.cat((cx_1.unsqueeze(2), cy_1.unsqueeze(2), cx_2.unsqueeze(2), cy_2.unsqueeze(2)), 2).float()
+        cx, cy = (all_bbox[:, :, 0] + all_bbox[:, :, 2]) / 2, (all_bbox[:, :, 1] + all_bbox[:, :, 3]) / 2
+        all_obj_centers = torch.cat((cx.unsqueeze(2), cy.unsqueeze(2)), 2).float()
 
         # Obj label indexes
         all_obj_label_idxs = all_bbox[:, :, -1].long()
@@ -154,38 +154,25 @@ class Dataset(Dataset):
             obj_label_idxs, obj_feat, obj_centers = all_obj_label_idxs[i], all_feat[i], all_obj_centers[i]
             num_objs = len(obj_label_idxs)
 
-            # print()
-            # print(obj_label_idxs.shape, obj_feat.shape, obj_centers.shape)
-
             # Create the adj list (making big disconnected graph for one video)
             # relation pair idxs
             source_nodes = torch.arange(obj_label_idxs.shape[0]).unsqueeze(1).repeat(1,
                                                                                      obj_label_idxs.shape[0]).flatten()
             target_nodes = torch.arange(obj_label_idxs.shape[0]).unsqueeze(0).repeat(1,
                                                                                      obj_label_idxs.shape[0]).flatten()
-
-            # print(source_nodes.shape, source_nodes.shape)
-            
             adj_list = torch.cat((source_nodes.unsqueeze(1), target_nodes.unsqueeze(1)), 1)
             repeat_idx = torch.where(adj_list[:, 0] != adj_list[:, 1])[0]  # removing the self loops from the adj list
             adj_list = adj_list[repeat_idx]
             adj_list = torch.LongTensor(adj_list)
             adj_list = adj_list.permute((1, 0))
 
-            # print("adj_list ", adj_list.shape)
-
             # Edge embeddings - dist_rel, obj centers of source, obj centers of target
             source_nodes, target_nodes = adj_list[0, :], adj_list[1, :]
-            obj_centers[:, 0:2] = obj_centers[:, 0:2] / frame_stats[i]  # normalize with frame height and width
-            obj_centers[:, 2:] = obj_centers[:, 2:] / frame_stats[i]
+            obj_centers = obj_centers / frame_stats[i]  # normalize with frame height and width
             source_centers = obj_centers[source_nodes]
             target_centers = obj_centers[target_nodes]
 
-            # print(source_centers.shape, target_centers.shape)
-
-            dist_mat = self.get_distance(source_centers, target_centers).float()
-            # dist_mat = torch.cdist(source_centers, target_centers).float()
-            # print("dist_mat ", dist_mat1.shape, dist_mat2.shape)
+            dist_mat = torch.cdist(source_centers, target_centers).float()
             dist_mat = F.softmax(-dist_mat, dim=-1)
             dist_rel = dist_mat[adj_list[0, :], adj_list[1, :]].unsqueeze(1)
 
@@ -371,8 +358,8 @@ class CrossValDataset(Dataset):
         frame_stats = torch.from_numpy(np.load(frame_stats_file)).float()
 
         # Calculating the bbox centers
-        cx_1, cy_1, cx_2, cy_2 = all_bbox[:, :, 0], all_bbox[:, :, 1], all_bbox[:, :, 2], all_bbox[:, :, 3]
-        all_obj_centers = torch.cat((cx_1.unsqueeze(2), cy_1.unsqueeze(2), cx_2.unsqueeze(2), cy_2.unsqueeze(2)), 2).float()
+        cx, cy = (all_bbox[:, :, 0] + all_bbox[:, :, 2]) / 2, (all_bbox[:, :, 1] + all_bbox[:, :, 3]) / 2
+        all_obj_centers = torch.cat((cx.unsqueeze(2), cy.unsqueeze(2)), 2).float()
 
         # Obj label indexes
         all_obj_label_idxs = all_bbox[:, :, -1].long()
@@ -389,38 +376,25 @@ class CrossValDataset(Dataset):
             obj_label_idxs, obj_feat, obj_centers = all_obj_label_idxs[i], all_feat[i], all_obj_centers[i]
             num_objs = len(obj_label_idxs)
 
-            # print()
-            # print(obj_label_idxs.shape, obj_feat.shape, obj_centers.shape)
-
             # Create the adj list (making big disconnected graph for one video)
             # relation pair idxs
             source_nodes = torch.arange(obj_label_idxs.shape[0]).unsqueeze(1).repeat(1,
                                                                                      obj_label_idxs.shape[0]).flatten()
             target_nodes = torch.arange(obj_label_idxs.shape[0]).unsqueeze(0).repeat(1,
                                                                                      obj_label_idxs.shape[0]).flatten()
-
-            # print(source_nodes.shape, source_nodes.shape)
-            
             adj_list = torch.cat((source_nodes.unsqueeze(1), target_nodes.unsqueeze(1)), 1)
             repeat_idx = torch.where(adj_list[:, 0] != adj_list[:, 1])[0]  # removing the self loops from the adj list
             adj_list = adj_list[repeat_idx]
             adj_list = torch.LongTensor(adj_list)
             adj_list = adj_list.permute((1, 0))
 
-            # print("adj_list ", adj_list.shape)
-
             # Edge embeddings - dist_rel, obj centers of source, obj centers of target
             source_nodes, target_nodes = adj_list[0, :], adj_list[1, :]
-            obj_centers[:, 0:2] = obj_centers[:, 0:2] / frame_stats[i]  # normalize with frame height and width
-            obj_centers[:, 2:] = obj_centers[:, 2:] / frame_stats[i]
+            obj_centers = obj_centers / frame_stats[i]  # normalize with frame height and width
             source_centers = obj_centers[source_nodes]
             target_centers = obj_centers[target_nodes]
 
-            # print(source_centers.shape, target_centers.shape)
-
-            dist_mat = self.get_distance(source_centers, target_centers).float()
-            # dist_mat = torch.cdist(source_centers, target_centers).float()
-            # print("dist_mat ", dist_mat1.shape, dist_mat2.shape)
+            dist_mat = torch.cdist(source_centers, target_centers).float()
             dist_mat = F.softmax(-dist_mat, dim=-1)
             dist_rel = dist_mat[adj_list[0, :], adj_list[1, :]].unsqueeze(1)
 
