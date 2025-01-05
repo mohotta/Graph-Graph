@@ -140,7 +140,7 @@ class Dataset(Dataset):
         all_obj_centers = torch.cat((cx.unsqueeze(2), cy.unsqueeze(2)), 2).float()
 
         # Obj label indexes
-        all_obj_label_idxs = all_bbox[:, :, -2].long()
+        all_obj_label_idxs = all_bbox[:, :, -1].long()
 
         # ---------- Building the object-level spatio-temporal graph ---------------
         video_data, edge_weights, edge_embeddings, obj_vis_feat = [], [], [], []
@@ -361,7 +361,7 @@ class CrossValDataset(Dataset):
         all_obj_centers = torch.cat((cx.unsqueeze(2), cy.unsqueeze(2)), 2).float()
 
         # Obj label indexes
-        all_obj_label_idxs = all_bbox[:, :, -2].long()
+        all_obj_label_idxs = all_bbox[:, :, -1].long()
 
         # ---------- Building the object-level spatio-temporal graph ---------------
         video_data, edge_weights, edge_embeddings, obj_vis_feat = [], [], [], []
@@ -585,7 +585,7 @@ class FeaturesDataset(Dataset):
         all_obj_centers = torch.cat((cx.unsqueeze(2), cy.unsqueeze(2)), 2).float()
 
         # Obj label indexes
-        all_obj_label_idxs = all_bbox[:, :, -2].long()
+        all_obj_label_idxs = all_bbox[:, :, -1].long()
 
         # ---------- Building the object-level spatio-temporal graph ---------------
         video_data, edge_weights, edge_embeddings, obj_vis_feat = [], [], [], []
