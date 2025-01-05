@@ -12,19 +12,14 @@ def evaluation(all_pred, all_labels, time_of_accidents, fps=20.0):
     :output: AP (average precision, AUC), mTTA (mean Time-to-Accident), TTA@R80 (TTA at Recall=80%)
     """
 
-
-    print(all_pred.shape, time_of_accidents)
-
     preds_eval = []
     min_pred = np.inf
     n_frames = 0
     for idx, toa in enumerate(time_of_accidents):
         if all_labels[idx] > 0:
             pred = all_pred[idx, :int(toa)]  # positive video
-            print(pred.shape, toa)
         else:
             pred = all_pred[idx, :]  # negative video
-            print(pred.shape)
         # find the minimum prediction
         min_pred = np.min(pred) if min_pred > np.min(pred) else min_pred
         preds_eval.append(pred)
