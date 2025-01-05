@@ -87,6 +87,20 @@ class Dataset(Dataset):
         """
         return int(feat_path.split('/')[-1].split('.mat')[0].split('_')[-1])
 
+    def _get_distance(self, a, b, p):
+        assert len(a) == len(b) == len(p) == 2
+        return abs(((b[1] - a[1])*p[0] - (b[0] - a[0])*p[1] + b[0]*a[1] - b[1]*a[0]) / math.sqrt(pow(b[1] - a[1], 2) + pow(b[0] - a[0], 2)))
+
+    def get_distance(self, source_centers, target_centers):
+        all_dist = []
+        for (sx_1, sy_1, sx_2, sy_2) in source_centers:
+            src_dist = []
+            for (tx_1, ty_1, tx_2, ty_2) in target_centers:
+                distance = self._get_distance((sx_1, sy_1), (sx_2, sy_1), ((tx_1+tx_2)/2, ty_2))
+                src_dist.append(distance)
+            all_dist.append(np.array(src_dist))
+        return torch.from_numpy(np.array(all_dist))
+
     def get_toa_all(self, video_name):
 
         """ 
@@ -321,6 +335,20 @@ class CrossValDataset(Dataset):
 
         """
         return int(feat_path.split('/')[-1].split('.mat')[0].split('_')[-1])
+
+    def _get_distance(self, a, b, p):
+        assert len(a) == len(b) == len(p) == 2
+        return abs(((b[1] - a[1])*p[0] - (b[0] - a[0])*p[1] + b[0]*a[1] - b[1]*a[0]) / math.sqrt(pow(b[1] - a[1], 2) + pow(b[0] - a[0], 2)))
+
+    def get_distance(self, source_centers, target_centers):
+        all_dist = []
+        for (sx_1, sy_1, sx_2, sy_2) in source_centers:
+            src_dist = []
+            for (tx_1, ty_1, tx_2, ty_2) in target_centers:
+                distance = self._get_distance((sx_1, sy_1), (sx_2, sy_1), ((tx_1+tx_2)/2, ty_2))
+                src_dist.append(distance)
+            all_dist.append(np.array(src_dist))
+        return torch.from_numpy(np.array(all_dist))
 
     def get_toa_all(self, video_name):
 
@@ -558,6 +586,20 @@ class FeaturesDataset(Dataset):
 
         """
         return int(feat_path.split('/')[-1].split('.mat')[0].split('_')[-1])
+
+    def _get_distance(self, a, b, p):
+        assert len(a) == len(b) == len(p) == 2
+        return abs(((b[1] - a[1])*p[0] - (b[0] - a[0])*p[1] + b[0]*a[1] - b[1]*a[0]) / math.sqrt(pow(b[1] - a[1], 2) + pow(b[0] - a[0], 2)))
+
+    def get_distance(self, source_centers, target_centers):
+        all_dist = []
+        for (sx_1, sy_1, sx_2, sy_2) in source_centers:
+            src_dist = []
+            for (tx_1, ty_1, tx_2, ty_2) in target_centers:
+                distance = self._get_distance((sx_1, sy_1), (sx_2, sy_1), ((tx_1+tx_2)/2, ty_2))
+                src_dist.append(distance)
+            all_dist.append(np.array(src_dist))
+        return torch.from_numpy(np.array(all_dist))
 
     def get_toa_all(self, video_name):
 
