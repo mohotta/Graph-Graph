@@ -291,7 +291,7 @@ if __name__ == "__main__":
 
     for fold, (train_idx, test_idx) in enumerate(kf.split(dataset)):
 
-        print('running split:', fold)
+        print('running split:', fold+1)
 
         train_dataset = Subset(dataset, train_idx)
         test_dataset = Subset(dataset, test_idx)
