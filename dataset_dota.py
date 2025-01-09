@@ -535,7 +535,7 @@ class CrossValDataset(Dataset):
         return len(self.feature_paths)
 
 class FeaturesDataset(Dataset):
-    def __init__(self, dataset_path, img_dataset_path, split_path, ref_interval, objmap_file, training):
+    def __init__(self, dataset_path, img_dataset_path, toas_files_path, split_path, ref_interval, objmap_file, training):
 
         """
         Input:
@@ -557,6 +557,7 @@ class FeaturesDataset(Dataset):
         self.ref_interval = ref_interval
         self.temporal_ref = 1
         self.dilation_factor = 1
+        self.toas_files_path = toas_files_path
         self.topk = 10
         self.frame_stats_path = dataset_path[:-8] + 'frames_stats'  # (height, width)
         self.n_frames = 50
@@ -566,7 +567,7 @@ class FeaturesDataset(Dataset):
         self.nlp = spacy.load('en_core_web_md', disable=['ner', 'parser'])
         self.obj_embeddings = torch.from_numpy(np.array([self.nlp(obj).vector for obj in self.idx_to_classes_obj]))
 
-    def _extract_feature_paths(self, dataset_path, split_path="splits_ccd/", training=True):
+    def _extract_feature_paths(self, dataset_path, split_path="splits_dota/", training=True):
 
         """ Function to extract paths to frames given the specified train/test split
         Input:
@@ -578,17 +579,14 @@ class FeaturesDataset(Dataset):
         feature_paths: List of all the video paths in a split
 
         """
-        fn = "train_split.txt" if training else "test_split.txt"
+        fn = "split.txt"
         split_path = os.path.join(split_path, fn)
         with open(split_path) as file:
             lines = file.read().splitlines()
         feature_paths = []
 
         for line in lines:
-            if training:
-                feature_paths += [os.path.join(dataset_path, "training", line)]
-            else:
-                feature_paths += [os.path.join(dataset_path, "testing", line)]
+            feature_paths += [os.path.join(dataset_path, line)]
 
         return feature_paths
 
@@ -604,13 +602,27 @@ class FeaturesDataset(Dataset):
         """
         return int(feat_path.split('/')[-1].split('.mat')[0].split('_')[-1])
 
+    def _get_distance(self, a, b, p):
+        assert len(a) == len(b) == len(p) == 2
+        return abs(((b[1] - a[1])*p[0] - (b[0] - a[0])*p[1] + b[0]*a[1] - b[1]*a[0]) / math.sqrt(pow(b[1] - a[1], 2) + pow(b[0] - a[0], 2)))
+
+    def get_distance(self, source_centers, target_centers):
+        all_dist = []
+        for (sx_1, sy_1, sx_2, sy_2) in source_centers:
+            src_dist = []
+            for (tx_1, ty_1, tx_2, ty_2) in target_centers:
+                distance = self._get_distance((sx_1, sy_1), (sx_2, sy_1), ((tx_1+tx_2)/2, ty_2))
+                src_dist.append(distance)
+            all_dist.append(np.array(src_dist))
+        return torch.from_numpy(np.array(all_dist))
+
     def get_toa_all(self, video_name):
 
         """ 
         get toa from toas directory
         """
 
-        toa_dir = self.frame_stats_path[:-12] + 'toas'
+        toa_dir = self.toas_files_path
         toa_file = os.path.join(toa_dir, video_name+'.txt')
 
         with open(toa_file) as f:
@@ -636,19 +648,19 @@ class FeaturesDataset(Dataset):
 
         # Reading frame (i3d) features for the frames
         if curr_vid_label > 0:
-            img_file = os.path.join(self.img_dataset_path, feature_path.split('/')[-2], "positive",
+            img_file = os.path.join(self.img_dataset_path, "positive",
                                     feature_path.split('/')[-1].split(".")[0] + '.npy')
         else:
-            img_file = os.path.join(self.img_dataset_path, feature_path.split('/')[-2], "negative",
+            img_file = os.path.join(self.img_dataset_path, "negative",
                                     feature_path.split('/')[-1].split(".")[0] + '.npy')
         all_img_feat = self.transform(np.load(img_file)).squeeze(0)
 
         # Reading frame stats file
         if curr_vid_label > 0:
-            frame_stats_file = os.path.join(self.frame_stats_path, feature_path.split('/')[-2], "positive",
+            frame_stats_file = os.path.join(self.frame_stats_path, "positive",
                                             feature_path.split('/')[-1].split(".")[0] + '.npy')
         else:
-            frame_stats_file = os.path.join(self.frame_stats_path, feature_path.split('/')[-2], "negative",
+            frame_stats_file = os.path.join(self.frame_stats_path, "negative",
                                             feature_path.split('/')[-1].split(".")[0] + '.npy')
         frame_stats = torch.from_numpy(np.load(frame_stats_file)).float()
 
