@@ -346,18 +346,7 @@ class CrossValDataset(Dataset):
         return int(feat_path.split('/')[-1].split('.mat')[0].split('_')[-1])
 
     def _get_distance(self, a, b, p):
-        assert len(a) == len(b) == len(p) == 2
-        return abs(((b[1] - a[1])*p[0] - (b[0] - a[0])*p[1] + b[0]*a[1] - b[1]*a[0]) / math.sqrt(pow(b[1] - a[1], 2) + pow(b[0] - a[0], 2)))
-
-    def get_distance(self, source_centers, target_centers):
-        all_dist = []
-        for (sx_1, sy_1, sx_2, sy_2) in source_centers:
-            src_dist = []
-            for (tx_1, ty_1, tx_2, ty_2) in target_centers:
-                distance = self._get_distance((sx_1, sy_1), (sx_2, sy_1), ((tx_1+tx_2)/2, ty_2))
-                src_dist.append(distance)
-            all_dist.append(np.array(src_dist))
-        return torch.from_numpy(np.array(all_dist))
+        return torch.abs(((b[1] - a[1])*p[0] - (b[0] - a[0])*p[1] + b[0]*a[1] - b[1]*a[0]) / torch.sqrt(torch.pow(b[1] - a[1], 2) + torch.pow(b[0] - a[0], 2)))
 
     def get_toa_all(self, video_name):
 
@@ -461,13 +450,16 @@ class CrossValDataset(Dataset):
             # dist_mat = self.get_distance(source_centers, target_centers).float()
             dist_mat = torch.cdist(source_centers, target_centers).float()
 
-            for idx in target_nodes:
-                dist = self._get_distance((bbox[0, 0], bbox[0, 1]), (bbox[0, 2], bbox[0, 3]), ((bbox[idx, 0]+bbox[idx, 2])/2, bbox[idx, 3]))
-                dist_mat[0, idx] = dist if(dist) else 0
+            n = bbox.shape[0]-1
+
+            dist = self._get_distances((bbox[0, 0].unsqueeze(0).repeat(n, 1), bbox[0, 1].unsqueeze(0).repeat(n, 1)), (bbox[0, 2].unsqueeze(0).repeat(n, 1), bbox[0, 3].unsqueeze(0).repeat(n, 1)), ((bbox[1:, 0]+bbox[1:, 2])/2, bbox[1:, 3]))
+            dist = torch.nan_to_num(dist, nan=0.0)
             
             # print("dist_mat ", dist_mat1.shape, dist_mat2.shape)
             dist_mat = F.softmax(-dist_mat, dim=-1)
             dist_rel = dist_mat[adj_list[0, :], adj_list[1, :]].unsqueeze(1)
+
+            dist_rel[0:n, :] = dist[0].unsqueeze(1)
 
             edge_embed = torch.cat((source_centers, target_centers, dist_rel), 1)
 
