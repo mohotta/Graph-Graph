@@ -345,7 +345,7 @@ class CrossValDataset(Dataset):
         """
         return int(feat_path.split('/')[-1].split('.mat')[0].split('_')[-1])
 
-    def _get_distance(self, a, b, p):
+    def _get_distances(self, a, b, p):
         return torch.abs(((b[1] - a[1])*p[0] - (b[0] - a[0])*p[1] + b[0]*a[1] - b[1]*a[0]) / torch.sqrt(torch.pow(b[1] - a[1], 2) + torch.pow(b[0] - a[0], 2)))
 
     def get_toa_all(self, video_name):
