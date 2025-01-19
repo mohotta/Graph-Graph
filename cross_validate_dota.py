@@ -301,10 +301,10 @@ if __name__ == "__main__":
         folder = "split_idx"
         os.makedirs(folder, exist_ok=True)
 
-        with open(f"{folder}/fold_{fold+1}_train.txt") as f:
+        with open(f"{folder}/fold_{fold+1}_train.txt", "w") as f:
             f.write('\n'.join(train_idx))
 
-        with open(f"{folder}/fold_{fold+1}_test.txt") as f:
+        with open(f"{folder}/fold_{fold+1}_test.txt", "w") as f:
             f.write('\n'.join(test_idx))
 
         train_dataset = Subset(dataset, train_idx)
