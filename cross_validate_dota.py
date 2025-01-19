@@ -45,7 +45,12 @@ from eval_utils import evaluation
 import time
 from eval_utils import evaluation
 
+import random
+
 torch.manual_seed(0)  # 3407
+np.random.seed(0)
+random.seed(0)
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dataset_path", type=str, default="data/dota/obj_feat", help="Path to extracted objects data")
@@ -292,6 +297,15 @@ if __name__ == "__main__":
     for fold, (train_idx, test_idx) in enumerate(kf.split(dataset)):
 
         print('running split:', fold+1)
+
+        folder = "split_idx"
+        os.makedirs(folder, exist_ok=True)
+
+        with open(f"{folder}/fold_{fold+1}_train.txt") as f:
+            f.write('\n'.join(train_idx))
+
+        with open(f"{folder}/fold_{fold+1}_test.txt") as f:
+            f.write('\n'.join(test_idx))
 
         train_dataset = Subset(dataset, train_idx)
         test_dataset = Subset(dataset, test_idx)
