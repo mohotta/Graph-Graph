@@ -42,7 +42,7 @@ class Dataset(Dataset):
         self.temporal_ref = 1
         self.dilation_factor = 1
         self.topk = 10
-        self.frame_stats_path = dataset_path[:-8] + 'frames_stats'  # (height, width)
+        self.frame_stats_path = os.path.join('/'.join(dataset_path.split("/")[:-1]), 'frames_stats')  # (height, width)
         self.n_frames = 150
 
         # Obj label to word embeddings
@@ -294,7 +294,7 @@ class CrossValDataset(Dataset):
         self.dilation_factor = 1
         self.toas_files_path = toas_files_path
         self.topk = 10
-        self.frame_stats_path = dataset_path[:-8] + 'frames_stats'  # (height, width)
+        self.frame_stats_path = os.path.join('/'.join(dataset_path.split("/")[:-1]), 'frames_stats')  # (height, width)
         self.n_frames = 150
 
         # Obj label to word embeddings
@@ -543,7 +543,7 @@ class FeaturesDataset(Dataset):
         self.dilation_factor = 1
         self.toas_files_path = toas_files_path
         self.topk = 10
-        self.frame_stats_path = dataset_path[:-8] + 'frames_stats'  # (height, width)
+        self.frame_stats_path = os.path.join('/'.join(dataset_path.split("/")[:-1]), 'frames_stats')  # (height, width)
         self.n_frames = 150
 
         # Obj label to word embeddings
