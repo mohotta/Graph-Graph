@@ -169,7 +169,7 @@ class SpaceTempGoG_detr_dad(nn.Module):
 		logits_mc = self.classify_fc2(frame_embed_sg)
 		probs_mc = self.softmax(logits_mc)
 		
-		return logits_mc, probs_mc
+		return logits_mc, probs_mc 
 
 
 class SpaceTempGoG_detr_dota(nn.Module):
