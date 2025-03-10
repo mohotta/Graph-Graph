@@ -80,7 +80,7 @@ cls_criterion = nn.CrossEntropyLoss().to(device)
 
 acc_best_avg_precision = 0
 best_ap = -1
-n_frames = 150
+n_frames = 50
 
 
 def test_model(epoch, model, test_dataloader, fold):
