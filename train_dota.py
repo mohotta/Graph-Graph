@@ -49,6 +49,7 @@ torch.manual_seed(0)  # 3407
 parser = argparse.ArgumentParser()
 parser.add_argument("--dataset_path", type=str, default="data/dota/obj_feat", help="Path to extracted objects data")
 parser.add_argument("--img_dataset_path", type=str, default="data/dota/i3d_feat", help="Path to I3D feature data")
+parser.add_argument("--toas_files_path", type=str, default="data/dota/toas", help="Path to frame of accidents feature data")
 parser.add_argument("--obj_mapping_file", type=str, default="data/dota/obj_idx_to_labels.json",
                     help="path to object label mapping file")
 parser.add_argument("--split_path", type=str, default="splits_dota/", help="Path to train/test split")
@@ -172,6 +173,7 @@ def main():
         train_dataset = Dataset(
             img_dataset_path=opt.img_dataset_path,
             dataset_path=opt.dataset_path,
+            toas_files_path=opt.toas_files_path,
             split_path=opt.split_path,
             #		frame_batch_size=opt.batch_size,
             ref_interval=opt.ref_interval,
@@ -183,6 +185,7 @@ def main():
         test_dataset = Dataset(
             img_dataset_path=opt.img_dataset_path,
             dataset_path=opt.dataset_path,
+            toas_files_path=opt.toas_files_path,
             split_path=opt.split_path,
             #		frame_batch_size=opt.batch_size,
             ref_interval=opt.ref_interval,
@@ -194,6 +197,7 @@ def main():
         train_dataset = DatasetWithNewDistance(
             img_dataset_path=opt.img_dataset_path,
             dataset_path=opt.dataset_path,
+            toas_files_path=opt.toas_files_path,
             split_path=opt.split_path,
             #		frame_batch_size=opt.batch_size,
             ref_interval=opt.ref_interval,
@@ -205,6 +209,7 @@ def main():
         test_dataset = DatasetWithNewDistance(
             img_dataset_path=opt.img_dataset_path,
             dataset_path=opt.dataset_path,
+            toas_files_path=opt.toas_files_path,
             split_path=opt.split_path,
             #		frame_batch_size=opt.batch_size,
             ref_interval=opt.ref_interval,

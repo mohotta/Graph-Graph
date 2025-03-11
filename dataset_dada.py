@@ -19,7 +19,7 @@ import spacy
 
 
 class Dataset(Dataset):
-    def __init__(self, dataset_path, img_dataset_path, split_path, ref_interval, objmap_file, training):
+    def __init__(self, dataset_path, img_dataset_path, toas_files_path, split_path, ref_interval, objmap_file, training):
 
         """
         Input:
@@ -41,9 +41,10 @@ class Dataset(Dataset):
         self.ref_interval = ref_interval
         self.temporal_ref = 1
         self.dilation_factor = 1
+        self.toas_files_path = toas_files_path
         self.topk = 10
         self.frame_stats_path = os.path.join('/'.join(dataset_path.split("/")[:-1]), 'frames_stats')  # (height, width)
-        self.n_frames = 150
+        self.n_frames = 50
 
         # Obj label to word embeddings
         self.idx_to_classes_obj = json.load(open(objmap_file))
@@ -258,7 +259,7 @@ class Dataset(Dataset):
     
 
 class DatasetWithNewDistance(Dataset):
-    def __init__(self, dataset_path, img_dataset_path, split_path, ref_interval, objmap_file, training):
+    def __init__(self, dataset_path, img_dataset_path, toas_files_path, split_path, ref_interval, objmap_file, training):
 
         """
         Input:
@@ -280,9 +281,10 @@ class DatasetWithNewDistance(Dataset):
         self.ref_interval = ref_interval
         self.temporal_ref = 1
         self.dilation_factor = 1
+        self.toas_files_path = toas_files_path
         self.topk = 10
         self.frame_stats_path = os.path.join('/'.join(dataset_path.split("/")[:-1]), 'frames_stats')  # (height, width)
-        self.n_frames = 150
+        self.n_frames = 50
 
         # Obj label to word embeddings
         self.idx_to_classes_obj = json.load(open(objmap_file))
@@ -534,7 +536,7 @@ class CrossValDataset(Dataset):
         self.toas_files_path = toas_files_path
         self.topk = 10
         self.frame_stats_path = os.path.join('/'.join(dataset_path.split("/")[:-1]), 'frames_stats')  # (height, width)
-        self.n_frames = 150
+        self.n_frames = 50
 
         # Obj label to word embeddings
         self.idx_to_classes_obj = json.load(open(objmap_file))
@@ -776,7 +778,7 @@ class CrossValDatasetWithNewDistance(Dataset):
         self.toas_files_path = toas_files_path
         self.topk = 10
         self.frame_stats_path = os.path.join('/'.join(dataset_path.split("/")[:-1]), 'frames_stats')  # (height, width)
-        self.n_frames = 150
+        self.n_frames = 50
 
         # Obj label to word embeddings
         self.idx_to_classes_obj = json.load(open(objmap_file))
@@ -1024,7 +1026,7 @@ class FeaturesDataset(Dataset):
         self.toas_files_path = toas_files_path
         self.topk = 10
         self.frame_stats_path = os.path.join('/'.join(dataset_path.split("/")[:-1]), 'frames_stats')  # (height, width)
-        self.n_frames = 150
+        self.n_frames = 50
 
         # Obj label to word embeddings
         self.idx_to_classes_obj = json.load(open(objmap_file))
@@ -1273,7 +1275,7 @@ class FeaturesDatasetWithNewDistance(Dataset):
         self.toas_files_path = toas_files_path
         self.topk = 10
         self.frame_stats_path = os.path.join('/'.join(dataset_path.split("/")[:-1]), 'frames_stats')  # (height, width)
-        self.n_frames = 150
+        self.n_frames = 50
 
         # Obj label to word embeddings
         self.idx_to_classes_obj = json.load(open(objmap_file))
