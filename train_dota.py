@@ -63,6 +63,8 @@ parser.add_argument("--num_classes", type=int, default=2, help="number of classe
 parser.add_argument("--test_only", type=int, default=0, help="Test the loaded model only the video 0(False)/1(True)")
 parser.add_argument("--ref_interval", type=int, default=20, help="Interval size for reference frames")
 parser.add_argument("--checkpoint_model", type=str, default="", help="Optional path to checkpoint model")
+parser.add_argument("--add_improvement", type=int, default=1, help="State whether improvement added or not (1 or 0)")
+parser.add_argument("--n_frames", type=int, default=50, help="no of frames in a single video datafile")
 
 opt = parser.parse_args()
 print(opt)
@@ -73,7 +75,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 cls_criterion = nn.CrossEntropyLoss().to(device)
 
 best_ap = -1
-n_frames = 50
+n_frames = opt.n_frames
 
 
 def test_model(epoch, model, test_dataloader):
@@ -164,28 +166,53 @@ def test_model(epoch, model, test_dataloader):
 
 
 def main():
-    # Define training set
-    train_dataset = Dataset(
-        img_dataset_path=opt.img_dataset_path,
-        dataset_path=opt.dataset_path,
-        split_path=opt.split_path,
-        #		frame_batch_size=opt.batch_size,
-        ref_interval=opt.ref_interval,
-        objmap_file=opt.obj_mapping_file,
-        training=True,
-    )
-    train_dataloader = DataLoader(train_dataset, batch_size=opt.video_batch_size, shuffle=True, num_workers=8)
+    
+    if opt.add_improvement == 0:
+        # Define training set
+        train_dataset = Dataset(
+            img_dataset_path=opt.img_dataset_path,
+            dataset_path=opt.dataset_path,
+            split_path=opt.split_path,
+            #		frame_batch_size=opt.batch_size,
+            ref_interval=opt.ref_interval,
+            objmap_file=opt.obj_mapping_file,
+            training=True,
+        )
 
-    # Define test set
-    test_dataset = Dataset(
-        img_dataset_path=opt.img_dataset_path,
-        dataset_path=opt.dataset_path,
-        split_path=opt.split_path,
-        #		frame_batch_size=opt.batch_size,
-        ref_interval=opt.ref_interval,
-        objmap_file=opt.obj_mapping_file,
-        training=False,
-    )
+        # Define test set
+        test_dataset = Dataset(
+            img_dataset_path=opt.img_dataset_path,
+            dataset_path=opt.dataset_path,
+            split_path=opt.split_path,
+            #		frame_batch_size=opt.batch_size,
+            ref_interval=opt.ref_interval,
+            objmap_file=opt.obj_mapping_file,
+            training=False,
+        )
+    else:
+        # Define training set
+        train_dataset = DatasetWithNewDistance(
+            img_dataset_path=opt.img_dataset_path,
+            dataset_path=opt.dataset_path,
+            split_path=opt.split_path,
+            #		frame_batch_size=opt.batch_size,
+            ref_interval=opt.ref_interval,
+            objmap_file=opt.obj_mapping_file,
+            training=True,
+        )
+
+        # Define test set
+        test_dataset = DatasetWithNewDistance(
+            img_dataset_path=opt.img_dataset_path,
+            dataset_path=opt.dataset_path,
+            split_path=opt.split_path,
+            #		frame_batch_size=opt.batch_size,
+            ref_interval=opt.ref_interval,
+            objmap_file=opt.obj_mapping_file,
+            training=False,
+        )
+
+    train_dataloader = DataLoader(train_dataset, batch_size=opt.video_batch_size, shuffle=True, num_workers=8)
     test_dataloader = DataLoader(test_dataset, batch_size=opt.test_video_batch_size, shuffle=False, num_workers=8)
 
     # Define network

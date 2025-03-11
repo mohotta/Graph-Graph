@@ -69,6 +69,8 @@ parser.add_argument("--img_feat_dim", type=int, default=4096, help="input i3d fe
 parser.add_argument("--embedding_dim", type=int, default=256, help="embedding size of the difference")
 parser.add_argument("--num_classes", type=int, default=2, help="number of classes")
 parser.add_argument("--ref_interval", type=int, default=20, help="Interval size for reference frames")
+parser.add_argument("--add_improvement", type=int, default=1, help="State whether improvement added or not (1 or 0)")
+parser.add_argument("--n_frames", type=int, default=50, help="no of frames in a single video datafile")
 
 opt = parser.parse_args()
 print(opt)
@@ -80,7 +82,7 @@ cls_criterion = nn.CrossEntropyLoss().to(device)
 
 acc_best_avg_precision = 0
 best_ap = -1
-n_frames = 50
+n_frames = opt.n_frames
 
 
 def test_model(epoch, model, test_dataloader, fold):
@@ -279,17 +281,28 @@ def train(train_dataloader, test_dataloader, fold):
 if __name__ == "__main__":
     
 
-    # Define training set
-    dataset = CrossValDataset(
-        img_dataset_path=opt.img_dataset_path,
-        dataset_path=opt.dataset_path,
-        toas_files_path=opt.toas_files_path,
-        split_path=opt.split_path,
-        #		frame_batch_size=opt.batch_size,
-        ref_interval=opt.ref_interval,
-        objmap_file=opt.obj_mapping_file,
-        training=True,
-    )
+    if opt.add_improvement == 0:
+        dataset = CrossValDataset(
+            img_dataset_path=opt.img_dataset_path,
+            dataset_path=opt.dataset_path,
+            toas_files_path=opt.toas_files_path,
+            split_path=opt.split_path,
+            #		frame_batch_size=opt.batch_size,
+            ref_interval=opt.ref_interval,
+            objmap_file=opt.obj_mapping_file,
+            training=True,
+        )
+    else:
+        dataset = CrossValDatasetWithNewDistance(
+            img_dataset_path=opt.img_dataset_path,
+            dataset_path=opt.dataset_path,
+            toas_files_path=opt.toas_files_path,
+            split_path=opt.split_path,
+            #		frame_batch_size=opt.batch_size,
+            ref_interval=opt.ref_interval,
+            objmap_file=opt.obj_mapping_file,
+            training=True,
+        )
 
     folds = opt.n_folds
     kf = KFold(n_splits=folds, shuffle=True, random_state=42)
