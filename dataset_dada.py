@@ -1045,14 +1045,17 @@ class FeaturesDataset(Dataset):
         feature_paths: List of all the video paths in a split
 
         """
-        fn = "split.txt"
+        fn = "train_split.txt" if training else "test_split.txt"
         split_path = os.path.join(split_path, fn)
         with open(split_path) as file:
             lines = file.read().splitlines()
         feature_paths = []
 
         for line in lines:
-            feature_paths += [os.path.join(dataset_path, line)]
+            if training:
+                feature_paths += [os.path.join(dataset_path, "training", line)]
+            else:
+                feature_paths += [os.path.join(dataset_path, "testing", line)]
 
         return feature_paths
 
@@ -1294,14 +1297,17 @@ class FeaturesDatasetWithNewDistance(Dataset):
         feature_paths: List of all the video paths in a split
 
         """
-        fn = "split.txt"
+        fn = "train_split.txt" if training else "test_split.txt"
         split_path = os.path.join(split_path, fn)
         with open(split_path) as file:
             lines = file.read().splitlines()
         feature_paths = []
 
         for line in lines:
-            feature_paths += [os.path.join(dataset_path, line)]
+            if training:
+                feature_paths += [os.path.join(dataset_path, "training", line)]
+            else:
+                feature_paths += [os.path.join(dataset_path, "testing", line)]
 
         return feature_paths
 
