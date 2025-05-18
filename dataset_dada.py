@@ -1045,17 +1045,14 @@ class FeaturesDataset(Dataset):
         feature_paths: List of all the video paths in a split
 
         """
-        fn = "train_split.txt" if training else "test_split.txt"
+        fn = "split.txt"
         split_path = os.path.join(split_path, fn)
         with open(split_path) as file:
             lines = file.read().splitlines()
         feature_paths = []
 
         for line in lines:
-            if training:
-                feature_paths += [os.path.join(dataset_path, "training", line)]
-            else:
-                feature_paths += [os.path.join(dataset_path, "testing", line)]
+            feature_paths += [os.path.join(dataset_path, line)]
 
         return feature_paths
 
@@ -1106,19 +1103,19 @@ class FeaturesDataset(Dataset):
 
         # Reading frame (i3d) features for the frames
         if curr_vid_label > 0:
-            img_file = os.path.join(self.img_dataset_path, feature_path.split('/')[-2], "positive",
+            img_file = os.path.join(self.img_dataset_path, "positive",
                                     feature_path.split('/')[-1].split(".")[0] + '.npy')
         else:
-            img_file = os.path.join(self.img_dataset_path, feature_path.split('/')[-2], "negative",
+            img_file = os.path.join(self.img_dataset_path, "negative",
                                     feature_path.split('/')[-1].split(".")[0] + '.npy')
         all_img_feat = self.transform(np.load(img_file)).squeeze(0)
 
         # Reading frame stats file
         if curr_vid_label > 0:
-            frame_stats_file = os.path.join(self.frame_stats_path, feature_path.split('/')[-2], "positive",
+            frame_stats_file = os.path.join(self.frame_stats_path, "positive",
                                             feature_path.split('/')[-1].split(".")[0] + '.npy')
         else:
-            frame_stats_file = os.path.join(self.frame_stats_path, feature_path.split('/')[-2], "negative",
+            frame_stats_file = os.path.join(self.frame_stats_path, "negative",
                                             feature_path.split('/')[-1].split(".")[0] + '.npy')
         frame_stats = torch.from_numpy(np.load(frame_stats_file)).float()
 
@@ -1297,17 +1294,14 @@ class FeaturesDatasetWithNewDistance(Dataset):
         feature_paths: List of all the video paths in a split
 
         """
-        fn = "train_split.txt" if training else "test_split.txt"
+        fn = "split.txt"
         split_path = os.path.join(split_path, fn)
         with open(split_path) as file:
             lines = file.read().splitlines()
         feature_paths = []
 
         for line in lines:
-            if training:
-                feature_paths += [os.path.join(dataset_path, "training", line)]
-            else:
-                feature_paths += [os.path.join(dataset_path, "testing", line)]
+            feature_paths += [os.path.join(dataset_path, line)]
 
         return feature_paths
 
@@ -1358,19 +1352,19 @@ class FeaturesDatasetWithNewDistance(Dataset):
 
         # Reading frame (i3d) features for the frames
         if curr_vid_label > 0:
-            img_file = os.path.join(self.img_dataset_path, feature_path.split('/')[-2], "positive",
+            img_file = os.path.join(self.img_dataset_path, "positive",
                                     feature_path.split('/')[-1].split(".")[0] + '.npy')
         else:
-            img_file = os.path.join(self.img_dataset_path, feature_path.split('/')[-2], "negative",
+            img_file = os.path.join(self.img_dataset_path, "negative",
                                     feature_path.split('/')[-1].split(".")[0] + '.npy')
         all_img_feat = self.transform(np.load(img_file)).squeeze(0)
 
         # Reading frame stats file
         if curr_vid_label > 0:
-            frame_stats_file = os.path.join(self.frame_stats_path, feature_path.split('/')[-2], "positive",
+            frame_stats_file = os.path.join(self.frame_stats_path, "positive",
                                             feature_path.split('/')[-1].split(".")[0] + '.npy')
         else:
-            frame_stats_file = os.path.join(self.frame_stats_path, feature_path.split('/')[-2], "negative",
+            frame_stats_file = os.path.join(self.frame_stats_path, "negative",
                                             feature_path.split('/')[-1].split(".")[0] + '.npy')
         frame_stats = torch.from_numpy(np.load(frame_stats_file)).float()
 
